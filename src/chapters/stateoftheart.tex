@@ -1,0 +1,56 @@
+\chapter{State of the Art}
+\label{chapter:stateoftheart}
+
+\section{Background}
+\label{sec:background}
+
+The internet is offering a voice to millions of people that have access to it.
+Creating content which is accessible by everyone in the network is possible with little or no barriers. Anyone can report on events, share their thoughts and ideas and because there are no limits to this process the results are massive amounts of information.
+\newline
+Facebook\footnote{www.facebook.com} and Twitter\footnote{www.twitter.com} are two examples of Internet platforms that have made it increasingly easier for people to generate content in a multitude of different formats: from text and pictures to rich media such as audio and video.
+\newline
+People send on average 50 million tweets with a peek record of 6939 TPS record. Facebook has even bigger numbers, in an average of 20 minutes, 1 million links are shared, 10 million comments are posted and 1,6 million wall posts are made\footnote{http://highscalability.com/blog/2010/12/31/facebook-in-20-minutes-27m-photos-102m-comments-46m-messages.html}. \todo{add number of users for each platform}. These are just two examples of popular social media websites and the rate at which content is being generated.
+\newline
+At the same time Facebook offers no way for a user to search through those comments and posts. 
+\newline
+People communicate in short gists with the help of special annotations made possible on the platform. Mentions are a way of including another Twitter user into the conversation, they are formed by prepending the character "@" to the string that represents the user. Hashtags are a method of creating channels of communication, they are a way to distill the idea or felling of your tweet to a single word, and by doing so you ensure the inclusion of your message to a certain ongoing conversation. Hashtags are created by prepending the character "\#" in front of words. Users can also reply to tweets, their message is grouped with the one they are replying to and context is preserved this way.
+Due to its short message format of 140 characters per message, Twitter has become a popular micro blogging platform for reporting on news and events as they occur.
+As a user you can always view the 10 most popular hashtags in different regions around the world or worldwide and participate in the conversation. You can also search for a certain query and messages that match gets returned either if it contains the string as a hashtag or in the message body.
+\newline
+The massive amount of information being generated especially on popular topics make it difficult to keep track of conversations as they happen. Unlike Facebook where the people you interact with are mostly people you know and that number can be within reasonable limits, on Twitter there are no barriers in communication and you have access to all the messages produced by every user of the platform. Even though hashtags help filter conversations they are too inclusive, there are no constraints over how to use them or how many to use so messages are included to any conversation as long as they have the hashtag.
+\newline
+There are a number of services that use Twitter data and attempt to solve some of these problems. We will be presenting some of them in the following section.
+
+\section{Existing Solutions}
+\label{sec:ES}
+
+\subsection{Analytics}
+\label{sub-sec:analytics}
+
+There are a number of analytics services that provide information regarding Twitter data. Most of them are businesses which offer information about the engagement of followers with the content created. Their goal is to help increase the visibility of tweets for businesses and therefor the metrics are related to the followers and focus less on exploring content. 
+
+
+
+This is also the solution offered by the Twitter analytics \todo{add link} some of the information it provides is the number of user that views your messages, how many new users are now following your account.
+
+One such example is SproutSocial \todo{add link} which allow you to publish content from their application to Twitter, monitor your content for engagement and offer analytics on the users which interacted with your content.
+
+ Another example that tries to solve a similar problem to {\project} is TweetArchivist \todo{add link}. You are able to query specific time frames and see top users and words related to certain search terms, as well as the most shared URLs and the most influential \todo{explain how they are influential} users that have send messages.
+
+\subsection{3rd Party Clients}
+\label{sub-sec:tpc}
+
+There are a number of 3rd party clients. They allow for filtering of content based on a particular hashtag and popularity (this is rated by number of retweets and favorites). This is a good alternative for finding popular opinions, you can judge it by how popular that certain tweet is but it conveys either the voice of popular users which get lots of favorites and retweets or some tweets which happen to gain popularity by accident.
+
+\subsection{Trends}
+\label{sub-sec:trends}
+
+Twitter website offers access to world-wide trends and also custom trends. First off world trends represents a list of key words present in tweets in a certain region. This allows you to browse all the tweets with those key words in real time. You do not have any other type of control over the data. The data is not grouped by any other means so exploring it means going through each tweet and reading it and taking into account the volume of tweets some trends may produce (as presented in the introduction of this chapter) this task may be impossible.
+
+\section{Related Work}
+\label{sub-sec:rel-work}
+
+\textit{Politics, Twitter, and information discovery} by \textbf{Moritz Sudhof}. \footnote{http://web.stanford.edu/group/journal/cgi-bin/wordpress/wp-content/uploads/2012/09/Sudhof_Eng_2012.pdf}.
+\newline
+The aim of the paper is to cluster Twitter users into groups based on the opinions they expressed regarding a political controversy. The corpus is fixed and contains tweets from the time the events occurred, they have been selected due to using the same hashtag specific to the event. Several different attempts are made at clustering the users using different methods. \textit{Tf-idf} and \textit{odds weighting} are used to extract relevant key words from messages. Multiple keywords shared between tweets are an indication of how similar they are and thus link the users together. \textit{Mentions}, referencing one or more users in your tweet, are also used. Mentioning someone in your tweet means that they are relevant to your opinion or somehow involved. Finally \textit{hashtags} are taken into consideration the idea behind it being that users who send out messages using the same hashtags share similar opinions, again the more hashtags users share the similar they must be.
+
