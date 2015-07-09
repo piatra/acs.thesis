@@ -26,11 +26,27 @@ The visualization ({\frontend})  is rendered in the browser. This offers the adv
 
 In the following paragraphs I will go into further details on how the system is implemented.
 \newline
-The implementation is done in Scala\footnote{http://www.scala-lang.org}. The reason behind this choice is the fact that Scala enables us to use a functional programming paradigm and at the same time provides a type system that makes implementation easier. Many of the operations in the application include transformations of lists of messages, something that functional programming is very good at. At the same time the Scala source code is intended to be compiled into Java bytecode and run on the JVM. This allows us to include any Java library into the project as Scala was designed with Java interoperability in mind. 
+The implementation is done in Scala\footnote{http://www.scala-lang.org}. The reason behind this choice is the fact that Scala enables us to use a functional programming paradigm and at the same time provides a type system that makes implementation easier. Many of the operations in the application include transformations of lists of messages, something that functional programming is very good at. At the same time the Scala source code is intended to be compiled into Java bytecode and run on the JVM. This allows us to include any Java library into the project as Scala was designed with Java interoperability in mind.
+\newline
+Another benefit of Scala is their implementation of parallel processing into the standard library. The aim of the language designers was achieving a high level abstraction that is easy to use thus achieving efficient parallel computations over collections in a transparent manner.
+\begin{lstlisting}[caption=Example of parallel collection usage in Scala, label=scala_parallel_collections]
+// Example of using parallel collections in Scala
+
+list.map(_ + 42) // regular, sequential map over a collection
+list.par.map(_ + 42) // parallel processing of the collection
+\end{lstlisting}
+Using a similar approach we can speed up message parsing and also the clustering step. This decision has had beneficial results for the overall processing time of the Twitter messages. We will go into further details about the running time and speed benefits of parallel processing in the pipeline in the Testing and Evaluation section.
+\newline
 \newline
 Accessing the Twitter API requires a developer account and an application created on their website dev.twitter.com \footnote{https://dev.twitter.com/streaming/overview}. The application gives you access to public, user or site streams. We will be using the public streams which returns data flowing through Twitter in real time given a certain array of keywords. This is the most useful endpoint for our data mining usecase.Using the provided API authentication tokens you can configure twitter4j library to retrieve tweets that match a specific keyword (or multiple keywords). The library comes with OAuth support and handles authentication with the endpoint. All messages received are passed to queue.
 \newline
-The messages retrieved are stored in a queue provided by Apache Kafka. The queue, has a configurable storage period for the messages which allows for temporary storage.  Communication between producers, consumers and the queue is done via a TCP protocol so message delivery is always assured. Kafka also guarantees message order and load balancing over a group of consumers but these features are not of interest for our project. Using a queue provides an advantage over the fact that messages arrive and are consumed at different frequencies. Depending on the popularity of the keywords specified tweets can come in at different rates. Based on a series of tests the rate of messages has been up to 150 per minute. At the same time the StanfordNLP has a parsing speed of one tweet per second. Using a queue also means that it is possible to start several consumers and producers at the same time. A consumer is concerned with getting the messages out of the Apache Kafka queue and placing them in a a new queue where they will eventually be parsed.
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{src/img/queue.png}
+\caption{Design for queue processing in the pipeline\label{overflow}}
+\end{figure}
+\newline
+The messages retrieved are stored in a queue provided by Apache Kafka\footnote{http://kafka.apache.org/documentation.html\#introduction}. The queue, has a configurable storage period for the messages which allows us to use it for temporary storage.  Communication between producers, consumers and the queue is done via a binary protocol over TCP so message delivery is always assured. The protocol does not require a handshake step in order to get or put messages in the queue, after a socket connection is established the client simply writes the messages it requires as request and then reads them. Kafka also guarantees message order and load balancing over a group of consumers but these features are not of interest for our project. Using a queue provides an advantage over the fact that messages arrive and are consumed at different frequencies. Depending on the popularity of the keywords specified tweets can come in at different rates. Based on a series of tests the rate of messages has been up to 150 per minute. At the same time the StanfordNLP has a parsing speed of one tweet per second. Using a queue also means that it is possible to start several consumers and producers at the same time. A consumer is concerned with getting the messages out of the Apache Kafka queue and placing them in a a new queue where they will eventually be parsed. The Apache Kafka documentation lists "Stream Processing" as an ideal use case for the library, and the processing of the Twitter API feed is exactly this sort of use case, thus confirming our design decision.
 \newline
 Before applying the clustering algorithm the tweets are first parsed. Parsing the tweets means removing all non alphanumerical characters or punctuation: such as unicode characters. One of the reasons for removing non-alphanumerical characters is that the StanfordNLP library cannot parse emojis \footnote{An emoji is a pictogram, similar to ASCII emoticons, which have been incorporated into Unicode meaning a wide adoption in online communication. Emoji symbols are two-byte sequences and support for them in browsers and mobile devices varies.}.
 \newline
@@ -98,16 +114,33 @@ The visualization for {\project} named \textbf{\frontend}\footnote{add link to G
 	\item React\footnote{https://facebook.github.io/react/} an Open Source JavaScript library from Facebook that handles updating the DOM\abbrev{DOM}{Document Object Model} (Document Object Model) every time new data comes in.
 	\item D3.js\footnote{http://d3js.org} which stands for Data Driven Documents, this is an Open Source library used for plotting, graphs and other types of data transformations.
 \end{enumerate}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{src/img/clusters.png}
+\caption{Example of cluster rendering\label{overflow}}
+\end{figure}
+
 {\frontend}  polls the server API at a fixed time intervals and gets the latest version of the tweets as well as their respective cluster. Using an appropriate data structure we group the tweets together based on cluster id and draw the clusters to the webpage. Drawing is done using an SVG\abbrev{SVG}{Scalable Vector Graphics} element with the help of the D3 library.
 \newline
 The interface presents the user a more meaningful representation of the data: tweets that belong to the same cluster are shown drawn together, also it is possible to explore the cluster and see all the messages that compose it.
 \newline
 The clusters will automatically update when new data comes in without the need to refresh the webpage. The application polls the API and when new messages become available it will redraw the clusters.
+\newline
+An explanation of Figure 3.3: We have tweets (blue dots) and centroids (the red dots). The centroid is only used as a visual cue, making it obvious which tweets belong together. Hovering over any of the blue dots to view the content of the tweet in an overlay that will appear or clicking on the red dot reveals a side menu on the right side with all the tweets that make up the cluster as well as a total.
 \subsection{Deployment}
 \label{deployment}
-Much of the testing involved in the development of the application was done on DigitalOcean. They are a cloud hosting provider and one of the most useful feature they provide is the ability to start up several machines at the same time capable of running the project, each with custom performance capabilities. The servers used were equipped with Intel(R) Xeon(R) CPUs and 8GB of RAM.
+For automated deployment of the project I used Docker\footnote{https://www.docker.com}, it is an Open Source project that runs applications inside of software containers. A container is similar to a virtual machine but avoids the overhead of it by sharing the same kernel as the host. Dockerfiles are configuration files for Docker containers, they are scripts that describe the steps necessary to create the environment for the application. A Dockerfile for \project  is also available as a gist\footnote{https://gist.github.com/piatra/53c0b6d185d10eeeaf8b}. Some of the requirements of the project that the container automatically configures:
+\begin{enumerate}
+	\item Scala 2.10
+	\item sbt 0.13.1 (Scala built tool) - Allows for task automation, running tasks and access to the Maven Central Repository for installing and updating packages 
+	\item Kafka 2.9.1
+	\item Java 8
+	\item These are on top of Ubuntu 12.04
+\end{enumerate}
+The script installs the required software with appropriate versions, updates all packages and it also created all the necessary configurations. Using this setup benchmarking was greatly simplified and we were able to try out different parameters for the clustering algorithm at the same time and observe how that affected the clustering performance and quality.
+Much of the testing involved in the development of the application was done on DigitalOcean. They are a PaaS\footnote{Platform as a Service} that offer virtual private servers, and one of the most useful feature they provide is the ability to start up several machines at the same time capable of running the project, each with custom performance capabilities. The servers used were equipped with 4 CPUs Intel(R) Xeon(R) CPUs and 8GB of RAM. Using virtual machines was an ideal setup for benchmarking because even though we used several different instances we were able to use the same snapshot across all machines thus ensuring a uniform testing environment. Once a container is started it will automatically begin fetching new data from Twitter and after an initial waiting period (in which the queue fills up with messages) the processing pipeline starts as well.
 \newline
-For automated deployment of the project I used Docker\footnote{https://www.docker.com}, it is an Open Source project that runs applications inside of software containers. A container is similar to a virtual machine but avoids the overhead of it by sharing the same kernel as the host. Dockerfiles are configuration files for Docker containers, they are scripts that describe the steps necessary to create the environment for the application. A Dockerfile for \project  is also available as a gist\footnote{https://gist.github.com/piatra/53c0b6d185d10eeeaf8b}. This automated the installation of Scala, Java and the project on the machine and it also created all the necessary configurations. Using this setup benchmarking was greatly simplified and we were able to try out different parameters at the same time and observe how that affected the clustering performance and quality.
 
 \section{Testing and Evaluation}
 \label{sec:testing}

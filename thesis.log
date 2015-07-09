@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  7 JUL 2015 22:24
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  8 JUL 2015 21:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -841,7 +841,7 @@ Package: booktabs 2005/04/14 v1.61803 publication quality tables
 )
 (/usr/local/texlive/2014/texmf-dist/tex/latex/multirow/multirow.sty
 \bigstrutjot=\dimen215
-))
+)
 (/usr/local/texlive/2014/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2013/01/14 v2.14 AMS math features
 \@mathmargin=\skip65
@@ -900,14 +900,20 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
 LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
 )
+(/usr/local/texlive/2014/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2014/03/04 1.5c listings language file
+))
 \@indexfile=\write5
 \openout5 = `thesis.idx'.
 
 
 Writing index file thesis.idx
 (./thesis.aux (./src/chapters/intro.aux) (./src/chapters/stateoftheart.aux)
-(./src/chapters/design.aux) (./src/chapters/conclusion.aux)
-(./src/chapters/further.aux))
+(./src/chapters/design.aux
+
+LaTeX Warning: Label `overflow' multiply defined.
+
+) (./src/chapters/conclusion.aux) (./src/chapters/further.aux))
 \openout1 = `thesis.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 3.
@@ -1087,7 +1093,7 @@ File: t1cmss.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 
 
 ]
-<src/img/reporting-framework.pdf, id=199, 459.7175pt x 312.16624pt>
+<src/img/reporting-framework.pdf, id=201, 459.7175pt x 312.16624pt>
 File: src/img/reporting-framework.pdf Graphic file (type pdf)
 
 <use src/img/reporting-framework.pdf>
@@ -1170,7 +1176,7 @@ content/uploads/2012/09/Sudhof_-Eng_-
 
  (./src/chapters/design.tex
 Chapter 3.
-<src/img/design.png, id=301, 812.03375pt x 241.90375pt>
+<src/img/design.png, id=303, 812.03375pt x 241.90375pt>
 File: src/img/design.png Graphic file (type png)
 
 <use src/img/design.png>
@@ -1180,34 +1186,55 @@ Package pdftex.def Info: src/img/design.png used on input line 12.
 
 
 
- <./src/img/design.png>] [8]
+ <./src/img/design.png>]
+<src/img/queue.png, id=321, 963.6pt x 722.7pt>
+File: src/img/queue.png Graphic file (type png)
+ <use src/img/queue.png>
+Package pdftex.def Info: src/img/queue.png used on input line 45.
+(pdftex.def)             Requested size: 412.56082pt x 309.42061pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 38--57
+
+ []
+
+[8] [9 <./src/img/queue.png>]
 
 Package amsmath Warning: Foreign command \over;
 (amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 56.
+(amsmath)                 on input line 72.
 
-[9]
-Underfull \hbox (badness 10000) in paragraph at lines 74--86
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 74--86
+[10]
+Underfull \hbox (badness 10000) in paragraph at lines 90--102
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 74--86
+Underfull \hbox (badness 10000) in paragraph at lines 90--102
 
  []
 
 
-Overfull \hbox (8.11621pt too wide) in paragraph at lines 93--94
+Underfull \hbox (badness 10000) in paragraph at lines 90--102
+
+ []
+
+
+Overfull \hbox (8.11621pt too wide) in paragraph at lines 109--110
 []\T1/cmr/m/n/10 There are a mul-ti-tude of li-braries that im-ple-ment vi-su-a
 l-iza-tions, graphs, plots for JavaScript.
  []
 
-[10] [11]
+[11] <src/img/clusters.png, id=373, 542.025pt x 214.8025pt>
+File: src/img/clusters.png Graphic file (type png)
+
+<use src/img/clusters.png>
+Package pdftex.def Info: src/img/clusters.png used on input line 120.
+(pdftex.def)             Requested size: 412.58011pt x 163.50397pt.
+ [12 <./src/img/clusters.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 139--142
+
+ []
+
 Missing character: There is no , in font nullfont!
 Missing character: There is no a in font nullfont!
 Missing character: There is no n in font nullfont!
@@ -1225,6 +1252,7 @@ Missing character: There is no e in font nullfont!
 Missing character: There is no a in font nullfont!
 Missing character: There is no s in font nullfont!
 Missing character: There is no t in font nullfont!
+[13]
 Missing character: There is no , in font nullfont!
 Missing character: There is no a in font nullfont!
 Missing character: There is no n in font nullfont!
@@ -1242,7 +1270,7 @@ Missing character: There is no e in font nullfont!
 Missing character: There is no a in font nullfont!
 Missing character: There is no s in font nullfont!
 Missing character: There is no t in font nullfont!
- [12]
+ [14]
 Missing character: There is no , in font nullfont!
 Missing character: There is no a in font nullfont!
 Missing character: There is no n in font nullfont!
@@ -1260,7 +1288,7 @@ Missing character: There is no e in font nullfont!
 Missing character: There is no a in font nullfont!
 Missing character: There is no s in font nullfont!
 Missing character: There is no t in font nullfont!
- [13]) [14]
+ [15]) [16]
 \openout2 = `src/chapters/conclusion.aux'.
 
  (./src/chapters/conclusion.tex
@@ -1278,7 +1306,7 @@ File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 13.
-) [15
+) [17
 
 
 
@@ -1288,22 +1316,17 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 
 (./src/chapters/further.tex
 Chapter 5.
-[16
+[18
 
 
 
-]) [17]) (./src/appendix/index.tex
+]) [19]) (./src/appendix/index.tex
 (./src/appendix/build.system.makefiles.tex
 Appendix A.
-(./src/code/build/Makefile.test
-LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <10> not available
-(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 1.
-LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <10> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 19.
-)))
+(./src/code/build/Makefile.test)))
 No file thesis.bbl.
 No file thesis.ind.
-[18
+[20
 
 
 ]
@@ -1321,20 +1344,20 @@ Package rerunfilecheck Info: File `thesis.out' has not changed.
 LaTeX Warning: There were undefined references.
 
 
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+LaTeX Warning: There were multiply-defined labels.
 
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 39.
  ) 
 Here is how much of TeX's memory you used:
- 30050 strings out of 493117
- 673221 string characters out of 6135433
- 862624 words of memory out of 5000000
- 32782 multiletter control sequences out of 15000+600000
- 20573 words of font info for 46 fonts, out of 8000000 for 9000
+ 30100 strings out of 493117
+ 673998 string characters out of 6135433
+ 839054 words of memory out of 5000000
+ 32815 multiletter control sequences out of 15000+600000
+ 20302 words of font info for 44 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 69i,19n,107p,1439b,2093s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/t
-exlive/2014/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/tex
+ 69i,19n,107p,1644b,2093s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
+{/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
 live/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texl
 ive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texli
 ve/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive
@@ -1357,12 +1380,11 @@ blic/cm-super/sfrm1440.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/publ
 ic/cm-super/sfrm2488.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public
 /cm-super/sfss0800.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/c
 m-super/sfti1000.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/courie
-r/ucrb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/courier/ucrr8a
-.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/courier/ucrro8a.pfb>
-Output written on thesis.pdf (24 pages, 532605 bytes).
+r/ucrr8a.pfb>
+Output written on thesis.pdf (26 pages, 597325 bytes).
 PDF statistics:
- 539 PDF objects out of 1000 (max. 8388607)
- 458 compressed objects within 5 object streams
- 118 named destinations out of 1000 (max. 500000)
- 241 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 564 PDF objects out of 1000 (max. 8388607)
+ 479 compressed objects within 5 object streams
+ 134 named destinations out of 1000 (max. 500000)
+ 251 words of extra memory for PDF output out of 10000 (max. 10000000)
 
