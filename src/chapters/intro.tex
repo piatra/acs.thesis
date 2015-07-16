@@ -1,14 +1,25 @@
 \chapter{Introduction}
 \label{chapter:intro}
 
-\textbf{This is just a demo file. It should not be used as a sample for a thesis.}\\
-\todo{Remove this line (this is a TODO)}
+Social media platforms are no longer an emerging field, they have become well established and millions of messages are exchanged daily. Services try to keep up with this trend by promoting popular content, either by number of clicks, views, favorites or other metrics. In this paper, we present a study on the clustering of messages from the Twitter platform, also known as "tweets". Inspired by the website's "Trends" which presents the most popular subjects either worldwide or in a region, the aim of our paper is to explore more of the popular subjects and cluster the conversations on more than just a keyword. The purpose of the clustering is to offer an in depth view of the conversation on a particular topic where peoples opinions may differ greatly.
+\newline
+The process is separated into three parts: data collection via the Twitter public API, message annotation with part-of-speech tags and message clustering. The messages provided by the website's API already provide a filtering option, you can specify keywords that you want to be part of the messages you get back. This might provide some indication of the conversation topic but getting an overview of the different conversations on the same subject is not a trivial task because messages have no obvious order.
+\newline
+By clustering the conversations together and offering an interface in which to explore the information, it is possible to view multiple points of view on the same subject and get more information than a popular topic might provide.
 
 \section{Project Description}
 \label{sec:proj}
 
+In this paper we first discuss related work in the field. The popularity of the medium and the large quantity of messages have made this subject a popular topic of research. We then continue by giving a detailed explanation of the clustering process, the system architecture and the parsing and message aggregation. The next section will go into details regarding testing and the results reached and the last part will offer suggestions for further improvements and research.
+
 \subsection{Project Scope}
 \label{sub-sec:proj-scope}
+
+We will first offer a broader explanation of the problem we wish to solve.
+\newline
+Twitter\footnote{https://support.twitter.com/articles/49309-using-hashtags-on-twitter} is an online micro blogging platform and social networking website. Users communicate through short 140 character messages called \"tweets\". To ease communication people use \"mentions\", the \"@\" character followed by a persons name. This is a way to involve another account into the conversation. Another feature of the conversation is the \"hashtag\", the \"#\" sign followed by a word this is used to highlight key parts in the message, either a feeling or subject. Popular such hashtags are included in the Trending Topics. These are popular subjects automatically generated from conversations taking place worldwide or in a certain region. This is why people often times include hashtags in order to associate their message with a popular topic. Users can also favorite a tweet, and "retweet" it, meaning they share it with the people that follow them while still attributing the message to the original author. These two metrics contribute to the overall popularity of a tweet.
+\newline
+Twitter is an interesting platform for research because of the large number of messages exchanged daily. There are 500 million tweets sent daily by its 302 million monthly active users\footnote{https://about.twitter.com/company} with a record of 143,199 tweets per second\footnote{https://blog.twitter.com/2013/new-tweets-per-second-record-and-how}. People usually turn to Twitter during major natural events, sporting events, award ceremonies and so on. With such a high amount of information coming in every second it is almost impossible to keep track of everything that is discussed.
 
 Ce nu ar trebui sa lipseasca: 
 - cum ai gandit rezolvarea problemei
