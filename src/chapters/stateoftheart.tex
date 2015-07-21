@@ -52,5 +52,23 @@ Twitter website offers access to world-wide trends and also custom trends. First
 
 \textit{Politics, Twitter, and information discovery} by \textbf{Moritz Sudhof}. \footnote{http://web.stanford.edu/group/journal/cgi-bin/wordpress/wp-content/uploads/2012/09/Sudhof_Eng_2012.pdf}.
 \newline
-The aim of the paper is to cluster Twitter users into groups based on the opinions they expressed regarding a political controversy. The corpus is fixed and contains tweets from the time the events occurred, they have been selected due to using the same hashtag specific to the event. Several different attempts are made at clustering the users using different methods. \textit{Tf-idf} and \textit{odds weighting} are used to extract relevant key words from messages. Multiple keywords shared between tweets are an indication of how similar they are and thus link the users together. \textit{Mentions}, referencing one or more users in your tweet, are also used. Mentioning someone in your tweet means that they are relevant to your opinion or somehow involved. Finally \textit{hashtags} are taken into consideration the idea behind it being that users who send out messages using the same hashtags share similar opinions, again the more hashtags users share the similar they must be.
+The aim of the paper is to cluster Twitter users into groups based on the opinions they expressed regarding a political controversy. The corpus is fixed and contains tweets from the time the events occurred, they have been selected due to using the same hashtag specific to the event.
+\newline
+Several different attempts are made at clustering the users using different methods. \textit{Tf-idf} and \textit{odds weighting} are used to extract relevant key words from messages. Multiple keywords shared between tweets are an indication of how similar they are and thus link the users together. \textit{Mentions}, referencing one or more users in your tweet, are also used. Mentioning someone in your tweet means that they are relevant to your opinion or somehow involved.
+\newline
+Finally \textit{hashtags} are taken into consideration the idea behind it being that users who send out messages using the same hashtags share similar opinions, again the more hashtags users share the similar they must be.
+
+\textit{Topical Clustering of Tweets} by \textbf{Kevin Dela Rosa, Rushin Shah}. \footnote{http://www.cs.cmu.edu/~kdelaros/sigir-swsm-2011.pdf}
+\newline
+The scope of this paper is to classify Twitter messages into different categories. The authors consider hashtags an approximate indication of the message topic and use it to improve results. The topics categories in which the messages are sorted are predefined, and the corpus is fixed, composed of selected tweets that cover the predefined topics.
+\newline
+Before being able to cluster the messages they undergo an intermediate processing step. The processing step includes normalization in which several variations are experimented: tokenization, removal of rare terms, conversion to lowercase each in different combinations and results are tracked.
+\newline
+Both unsupervised and supervised methods are used. K-Means is used in combination with TF-IDF as a weight function for the unsupervised clustering. Rocchio classifier is used for the supervised clustering. Results are compared and it is noted that the supervised method has better results.
+
+\textit{TweetMotif: Exploratory Search and Topic Summarization for Twitter} by \textbf{Brendan O’Connor, Michel Krieger, David Ahn} \footnote{http://brenocon.com/oconnor_krieger_ahn.icwsm2010.tweetmotif.pdf}
+\newline
+The paper presents the implementation details of TweetMotif. A platform that allows fetching tweets from Twitter Search API, generates 2-3 words topics from the newly formed corpus and associates messages to these topics.
+\newline
+The interface allows for a recursive drilldown into topics the goal being to offer a concise summary of the topics generated. Topic generation is achieved using n-grams with certain heuristics such as disregarding unigrams that are function words, or bigrams, trigrams that cross syntactic boundaries. Topics are merged and their sets of messages are combined. The user is presented with a limited number of topics to preserve cognitive load.
 
