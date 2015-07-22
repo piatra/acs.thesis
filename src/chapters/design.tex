@@ -3,7 +3,7 @@
 
 {\project} is composed of two parts:
 \begin{enumerate}
-  \item A backend that communicates with the Twitter API, fetches the data and performs the parsing the clustering. This exposes the information via a HTTP server that serves it in JSON format.
+  \item A backend that communicates with the Twitter API, retrieves tweets that match the query provided by the user, performs parsing and clustering. The result is a list of messages annotated with the cluster id they belong to. This information is made available with the help of an HTTP server that exposes an API. We have chosen JSON as the format to export the data via the API.
   \item A frontend that takes the JSON and renders clusters of tweets as well as provides an interface for the user to explore the conversations 
 \end{enumerate}
 
@@ -15,7 +15,7 @@
 
 The data processing pipeline is composed of three main parts. Data acquisition (marked with A in the design) is responsible for fetching data that will later be processed, the component is agnostic of the data that passes through but in our case it is Twitter messages (tweets). It uses a library \footnote{http://twitter4j.org/en/index.html} to communicate with Twitter API, it retrieves the tweets and stores them in a queue. The queue library is provided by Apache Kafka \footnote{http://kafka.apache.org}. As shown in the design, the reason for using queues between intermediary steps is that they allow for the producer and consumer to operate and different frequencies. The data acquisition segment could launch several clients regardless of what is happening further down the pipeline.
 
-The second section (B), data processing, parses the raw tweets and converts them into shorter messages with key terms. Messages are read from the queue that is being filled by the data acquisition layer (A). The processed messages are written to a new queue, thus allowing this layer to scale just as the previous one. Tweets are parsed and using StanfordNLP library \footnote{http://nlp.stanford.edu/software/index.shtml} each word is categorized with its own part-of-speech tag. Tags such as personal pronouns, possessive pronouns, prepositions, conjunctions are removed because they are too common. We could easily spin up several clients that consume messages because reading and writing is performed using two queues and thus the layer is decoupled from the other components of the pipeline.
+The second section (B), data processing, parses the raw tweets and converts them into shorter messages with key terms. Messages are read from the queue that is being filled by the data acquisition layer (A). The processed messages are written to a new queue, thus allowing this layer to scale just as the previous one. Tweets are parsed and using StanfordNLP library \footnote{http://nlp.stanford.edu/software/index.shtml} each word is categorized with its own part-of-speech tag. Tags such as personal pronouns, possessive pronouns, prepositions, conjunctions are removed because they are too common. We could easily spin up several clients that consume messages because reading and writing is performed using two queues and thus the layer is decoupled from the other components of the pipeline. One issue related to parsing conversations especially ones from social media is the jargon used and possible spelling errors. This issue is exacerbated by the fact that Twitter conversations have such hard limits on the number of characters, on overage a message does not have more that 10-12 words.
 
 The last part that processes data is responsible for clustering the messages based on the keywords generated in the previous step. The clustering algorithm uses K-Means with cosine similarity as a distance function, which I will go into more detail in the following section.
 
@@ -125,7 +125,7 @@ The visualization for {\project} named \textbf{\frontend}\footnote{add link to G
 \newline
 The interface presents the user a more meaningful representation of the data: tweets that belong to the same cluster are shown drawn together, also it is possible to explore the cluster and see all the messages that compose it.
 \newline
-The clusters will automatically update when new data comes in without the need to refresh the webpage. The application polls the API and when new messages become available it will redraw the clusters.
+The clusters will automatically update when new data comes in without the need to refresh the webpage. The application polls the API and when new messages become available it will redraw the clusters. A small optimization to the polling requests has been added: the polling interval doubles every time the request does not return with new data. This prevents the server from receiving too many requests if multiple {\frontend}  clients are running and also works similarly to the data processing step which will always take longer as more tweets are fed into the pipeline.
 \newline
 An explanation of Figure 3.3: We have tweets (blue dots) and centroids (the red dots). The centroid is only used as a visual cue, making it obvious which tweets belong together. Hovering over any of the blue dots to view the content of the tweet in an overlay that will appear or clicking on the red dot reveals a side menu on the right side with all the tweets that make up the cluster as well as a total.
 \subsection{Deployment}
