@@ -50,7 +50,8 @@ The messages retrieved are stored in a queue provided by Apache Kafka\footnote{h
 \newline
 Before applying the clustering algorithm the tweets are first parsed. Parsing the tweets means removing all non alphanumerical characters or punctuation: such as unicode characters. One of the reasons for removing non-alphanumerical characters is that the StanfordNLP library cannot parse emojis \footnote{An emoji is a pictogram, similar to ASCII emoticons, which have been incorporated into Unicode meaning a wide adoption in online communication. Emoji symbols are two-byte sequences and support for them in browsers and mobile devices varies.}.
 \newline
-The new messages are annotated using StanfordNLP library. This library reads the text and assigns a part of speech or other token to each word. The set of part of speech tags follows the Penn Treebank Project \footnote{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}. The resulting output is a list of tuples containing of the word, its POS tag and its level in the dependency graph. The dependency tree is constructed by drawing an edge between a token and the all others that it determines.
+The new messages are annotated using StanfordNLP part-of-speech tagger library. This library reads the text and assigns a part of speech or other token to each word. The set of part of speech tags follows the Penn Treebank Project \footnote{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}. The resulting output is a list of tuples containing of the word, its POS tag and its level in the dependency graph. The dependency tree is constructed by drawing an edge between a token and the all others that it determines. The tagger has an accuracy of 97.24% accuracy. More information about the implementation details and ideas that went into the project can be found in the paper \textbf{Feature-Rich Part-of-Speech Tagging with a Cyclic Dependency Network} by Kristina Toutanova, Dan Klein, Christopher Manning, and Yoram Singer.
+\newline
 The next step is to filter out words based on the part-of-speech tagging. Tags such as personal pronouns, possessive pronouns, prepositions, conjunctions are removed because they are too common and might introduce false positives for the clustering algorithm.
 \newline
 These parsed messages are pushed to a new queue. The reason for this is to completely decouple the 3 different stages of the pipeline: 
@@ -62,6 +63,7 @@ These parsed messages are pushed to a new queue. The reason for this is to compl
 
 
 The final stage of the pipeline takes all the parsed messages from the queue and applies the clustering algorithm. The algorithm used for this step is K-Means clustering and the distance function is the cosine similarity. Because the design of the K-Means clustering algorithm is to start the iterations with a random seed consisting of randomly selected points (in our case messages), we run the clustering using different starting seeds and choose the highest value out of all the runs as our best clustering option. This in turn will affect the overall running time of the application as we will see. Depending on our goals either speed or precision we can choose to just rely on the first random seed provided.
+The name K-Means, first introduced in \textbf{Some methods for classification and analysis of multivariate observations} by J. MacQueen. K-Means is an important clustering algorithm; its objective is to minimize the average distance between a point and its cluster center where a cluster center is the mean of all points in that cluster.
 
 \subsection{Clustering Algorithm}
 \label{clusteringalgorithm}
@@ -92,13 +94,48 @@ Using TF and IDF we transform each tweet into a vector with weights for each of 
 The \textit{A} and \textit{B} vectors in our equation constitute two vectors i.e. two tweets that have been turned into vectors after computing their TF and IDF. And the result of the \textit{cosine similarity} function tells us how similar the two vectors are, in return how similar two tweets are.
 \newline
 \newline
-The clustering algorithm uses the K-Means clustering algorithm. The algorithm starts with an initial set of clusters chosen at random from all the tweets. It then uses the distance function (the cosine similarity described above) to assign the rest of the tweets to those clusters. For each cluster now formed it computes a weighted average. These steps are repeated only now we use the weighted average centroids instead of the random points until the centroids remain the same between 2 consecutive steps or until an upper bound of steps is reached. This upper bound is added in to ensure the algorithm halts if it fails to reach convergence in a fixed number of steps.
+The clustering algorithm uses the K-Means clustering algorithm.
+To define some terms that are used in the implementation of the algorithm, a cluster center is the mean of all points in that cluster, or more formally
+
+\begin{equation}
+\text{ $\mu$ (w)} = { {1 \over |w| } {\sum_{x \in w} \textrm{ x } } }	
+\end{equation}
+
+
+Where \textit{w} is the cluster. Ideally the clusters that are formed do not overlap. To get a sense of how well a centroid, the mean point of a cluster, represents all of its members, we define RSS \textit{residual sum of squares}
+
+\begin{equation}
+\text{ RSS } = {{\sum_{x \in w_{k}}} \textrm{ | x - $\mu$(w)|$^{2}$ } }
+\end{equation}
+
+The objective of the algorithm, and therefor our objective is minimizing this RSS function. By reducing this value we reduce the average squared distance which is a measure of how well points in a cluster are represented by their centroid.
+
+The algorithm starts with an initial set of clusters chosen at random from all the tweets. It then uses the distance function (the cosine similarity described above) to assign the rest of the tweets to those clusters. For each cluster now formed it computes a weighted average. These steps are repeated only now we use the weighted average centroids instead of the random points until the centroids remain the same between 2 consecutive steps or until an upper bound of steps is reached. This upper bound is added in to ensure the algorithm halts if it fails to reach convergence in a fixed number of steps.
 \newline
+There are a number of termination conditions we can apply:
+\begin{enumerate}
+	\item Terminate when RSS falls below a certain $\epsilon$
+	\item Centroids do not change between iterations
+	\item Assignments of points to clusters do not change over iterations
+	\item A fixed number of iterations has completed. This will always ensure the termination of our algorithm but it might also affect the quality of our results.
+\end{enumerate}
+Several issues we might run into while running the algorithm are data outliers. An outlier is a data point on a graph or in a set of results that is very much bigger or smaller than the next nearest data point. Therefor such points do not fit well in any cluster being to far away from the rest of the data. One such example would be having a cluster with only one message.
+\newline 
+\begin{figure}[ht!]
+\centering
+\includegraphics[resolution=300,keepaspectratio]{src/img/outlier.png}
+\caption{Example of cluster rendering with outlier\label{overflow}}
+\end{figure}
+\newline
+Another such example of clustering done sub optimally is having a cluster with no actual messages in it. This is due to the methods used to select the initial seeds for the clustering algorithm. Selecting a "bad" seed, by which we mean an outlier will always lead to sub optimal results. Heuristics used to improve results are using the RSS function to choose the seeds. By using this method we would go through different seed candidates and chose one. Another possible method is simply removing outliers from our sample data.
 \newline
 Different assignments yield different clusters which in turn have different weights. A higher weight means better similarity between the node and the cluster they belong to and therefore a better result. This similarity is computed with the help of the \textit{cosine similarity} function after the K-Means algorithm has finished its assignment. For better results several iterations of the algorithm are used and the best score is chosen, at the cost of time spent clustering.
 \newline
+Another problem when using K-Means is choosing the correct \textit{K} value, number of clusters. Most papers suggest having domain knowledge over the data that is being clustered but in our case it is not entirely possible due to the fact that data is coming in real time. Using RSS function and attempting to select a \textit{K} value that minimizes it is an naive approach because RSS will reach its minimum for K = N meaning one cluster for every tweet in the dataset.
 \newline
-The result of the clustering algorithm as well as the tweet message and tweet author are combined and converted to a JSON data structure. This is in turn written to disk to be consumed by the endpoint accessing the server.. Using \textit{Finagle}\footnote{https://twitter.github.io/finagle/} an open source library from Twitter that provides an HTTP server implementation we can create the API endpoint. By having the data accessible via HTTP it can easily be consumed by any application regardless of the programming language used, also the reason we have chosen JSON as a format is because it is lightweight and most languages have an implementation of a JSON parser. The connection the the API endpoint is not kept alive, all clients are expected to poll the endpoint and react to changes. As an optimization the server could reply with status code 304 Not Modified \footnote{http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html} this would not include a message body and would let the client know that no new data is currently available. This would reduce the payload that has to be transmitted. On the client side this can be improved by using an exponential backoff approach for long polling. The polling period would always double when a 304 status code is presented and it would reset to a lower default value when the endpoint has new data available.
+The result of the clustering algorithm as well as the tweet message and tweet author are combined and converted to a JSON data structure. This is in turn written to disk to be consumed by the endpoint accessing the server.. Using \textit{Finagle}\footnote{https://twitter.github.io/finagle/} an open source library from Twitter that provides an HTTP server implementation we can create the API endpoint.
+\newline
+Having the data accessible via HTTP it can easily be consumed by any application regardless of the programming language used, also the reason we have chosen JSON as a format is because it is lightweight and most languages have an implementation of a JSON parser. The connection the the API endpoint is not kept alive, all clients are expected to poll the endpoint and react to changes. As an optimization the server could reply with status code 304 Not Modified \footnote{http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html} this would not include a message body and would let the client know that no new data is currently available. This would reduce the payload that has to be transmitted. On the client side this can be improved by using an exponential backoff approach for long polling. The polling period would always double when a 304 status code is presented and it would reset to a lower default value when the endpoint has new data available.
 
 \subsection{Data Visualization}
 \label{datavisualization}
