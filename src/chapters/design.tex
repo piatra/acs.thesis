@@ -148,9 +148,12 @@ Visualizing the data is made possible in the browser using JavaScript. We chose 
 \end{enumerate}
 The visualization for {\project} named \textbf{\frontend}\footnote{add link to Github} was build using two libraries.
 \begin{enumerate}
-	\item React\footnote{https://facebook.github.io/react/} an Open Source JavaScript library from Facebook that handles updating the DOM\abbrev{DOM}{Document Object Model} (Document Object Model) every time new data comes in.
+	\item React\footnote{https://facebook.github.io/react/} an Open Source JavaScript library from Facebook that takes care of updating the DOM\abbrev{DOM}{Document Object Model} (Document Object Model) every time new data comes in.
 	\item D3.js\footnote{http://d3js.org} which stands for Data Driven Documents, this is an Open Source library used for plotting, graphs and other types of data transformations.
 \end{enumerate}
+Both libraries work really well together because they offer a similar declarative API for describing the data flow and how the overall interface should look like. In D3.js you describe how a cluster element looks like and the function that should be used to position the elements. When the data input is populated with messages it will use the provided information to draw the clusters.
+\newline
+React allows you to break down your interface into smaller unit components. The idea behind this concept is that each component should be a working, functioning part of the big application. In the same way D3.js allows describing how the graph should look programatically, React advocates for small reusable components that encapsulate their internal logic. Using this pattern it is easy to achieve a fairly complex data visualization interface to display our clusters.
 
 \begin{figure}[ht!]
 \centering
