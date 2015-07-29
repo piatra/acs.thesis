@@ -74,3 +74,17 @@ The paper presents the implementation details of TweetMotif. A platform that all
 \newline
 The interface allows for a recursive drilldown into topics the goal being to offer a concise summary of the topics generated. Topic generation is achieved using n-grams with certain heuristics such as disregarding unigrams that are function words, or bigrams, trigrams that cross syntactic boundaries. Topics are merged and their sets of messages are combined. The user is presented with a limited number of topics to preserve cognitive load.
 
+\textit{A survey of text clustering algorithms} by \textbf{Charu C. Aggarwal} and \textbf{ChengXiang Zhai} \footnote{http://www.charuaggarwal.net/text-cluster.pdf}
+\newline
+The paper discusses the problem of text clustering in a broader context, not only related to social networks. They present a very common problem that of misspellings or typographical errors in documents, a usual mistake in most online conversations. They advice on the removal of common terms that can skew results either using a list of stop words or using TF-IDF.
+\newline
+The paper is also concerned with the clustering of text streams. One of the methods they explore involves a weight function that rates newer documents better than older ones. So as time progresses old centroids might not prove relevant anymore and fade out. At the same time new centroids form up but not all might, this is why initially all new centroids start up as being treated as outliers.
+\newline
+In order to optimize and improve the quality of the clustering the paper introduces the method of \textit{semantic smoothing} meant to reduce the errors caused by semantic ambiguity. The method works by extracting phrases instead of single words from sentences therefor reducing the probability of a word meaning multiple things. For example the word \textit{star} might have different meanings but in the phrase \textit{fixed star} it most certainly refers to a celestial body.
+
+\textit{A Web-based Kernel Function for Measuring the Similarity of Short Text Snippets} by \textbf{Mehran Sahami} and \textbf{Timothy D. Heilman} \footnote{http://wwwconference.org/www2006/programme/files/pdf/3069.pdf}
+\newline
+\newline
+The paper handles the issue of measuring similarity for really short sentences such as search queries which might not have any terms in common so techniques such as cosine similarity do nothing to help. The proposed solution in the paper is to use each term in the queries we are trying to match up as web search terms. Each term is used to query the web for documents and therefor provide context on it, these are called \textit{context vectors}. Therefor even though the terms \textit{AI} and \textit{Artificial Intelligence} would yield a cosine of 0, and therefor no similarity gathering a number of documents on the terms would help improve the context and compute a much better similarity for the two.
+\newline
+The main objective of the technique and the objective of the paper is finding ways to improve search suggestions to Google users.
