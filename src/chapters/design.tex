@@ -1,10 +1,11 @@
 \chapter{Design}
 \label{chapter:design}
 
-{\project} is composed of two parts:
+{\project} is designed as a data processing pipeline. It takes in messages from Twitter that match a certain provided query and at each step of the pipeline it modifies the message in some way either by removing parts of it that are not relevant to our process or annotating the content to provide further information for the clustering algorithm, resulting in the end with a classification of all messages into different categories all related to the initial query.
+At a high level overview {\project}  is composed of two parts:
 \begin{enumerate}
-  \item A backend that communicates with the Twitter API, retrieves tweets that match the query provided by the user, performs parsing and clustering. The result is a list of messages annotated with the cluster id they belong to. This information is made available with the help of an HTTP server that exposes an API. We have chosen JSON as the format to export the data via the API.
-  \item A frontend that takes the JSON and renders clusters of tweets as well as provides an interface for the user to explore the conversations 
+  \item A backend consisting of several services that communicates with the Twitter API, retrieve tweets that match the query provided by the user, and perform parsing and clustering. The result is a list of messages annotated with the cluster id they belong to. This information is made available with the help of an HTTP server that exposes an endpoint. We have chosen JSON as the format to export the data via the API.
+  \item A frontend which is responsible for taking the JSON and rendering clusters of tweets as well as providing an interface for the user to explore the conversations by seeing all related messages, view the original message to get context and replies and ability to visit the user profile.
 \end{enumerate}
 
 \begin{figure}[ht!]
@@ -170,15 +171,22 @@ The clusters will automatically update when new data comes in without the need t
 An explanation of Figure 3.3: We have tweets (blue dots) and centroids (the red dots). The centroid is only used as a visual cue, making it obvious which tweets belong together. Hovering over any of the blue dots to view the content of the tweet in an overlay that will appear or clicking on the red dot reveals a side menu on the right side with all the tweets that make up the cluster as well as a total.
 \subsection{Deployment}
 \label{deployment}
-For automated deployment of the project I used Docker\footnote{https://www.docker.com}, it is an Open Source project that runs applications inside of software containers. A container is similar to a virtual machine but avoids the overhead of it by sharing the same kernel as the host. Dockerfiles are configuration files for Docker containers, they are scripts that describe the steps necessary to create the environment for the application. A Dockerfile for \project  is also available as a gist\footnote{https://gist.github.com/piatra/53c0b6d185d10eeeaf8b}. Some of the requirements of the project that the container automatically configures:
+For automated deployment of the project I used Docker\footnote{https://www.docker.com}, it is an Open Source project that runs processes inside of isolated software containers. A container is similar to a virtual machine but avoids the overhead of it by sharing the same kernel as the host. Dockerfiles are configuration files for Docker images, they are scripts that describe the steps necessary to create the environment for the application. Docker allows to generated any number of such images on the host machine with different configurations and requirements, each one created receives a unique hash used for identification when it is required to run it. A Dockerfile for \project  is also available as a gist\footnote{https://gist.github.com/piatra/53c0b6d185d10eeeaf8b}. Some of the requirements of the project that the image contains and will automatically generate a container with:
 \begin{enumerate}
 	\item Scala 2.10
 	\item sbt 0.13.1 (Scala built tool) - Allows for task automation, running tasks and access to the Maven Central Repository for installing and updating packages 
 	\item Kafka 2.9.1
 	\item Java 8
-	\item These are on top of Ubuntu 12.04
+	\item These are are all running on a machine with Ubuntu 12.04
 \end{enumerate}
-The script installs the required software with appropriate versions, updates all packages and it also created all the necessary configurations. Using this setup benchmarking was greatly simplified and we were able to try out different parameters for the clustering algorithm at the same time and observe how that affected the clustering performance and quality.
+The script installs the required software with appropriate versions, updates all packages and it also created all the necessary configurations.
+An image created using the Docker syntax generates a read only template, from which you create the Docker containers.
+\begin{lstlisting}[caption=Starting a Docker container, label=run_docker_container]
+docker run -itp 8001:8080 ee7c18b2a566 /bin/bash
+\end{lstlisting}
+This is an example of starting a Docker container. We specify a hash which points to an existing Docker image from which our container will be created. We also specify -p which is the \textit{expose} option, which makes port 8001 from the container accessible outside the container through port 8080 of the host machine. Through this method we are able to expose the API that our server has set up inside of the container to the outside world.
+\newline
+Using this setup benchmarking was greatly simplified and we were able to try out different parameters for the clustering algorithm at the same time and observe how that affected the clustering performance and quality.
 Much of the testing involved in the development of the application was done on DigitalOcean. They are a PaaS\footnote{Platform as a Service} that offer virtual private servers, and one of the most useful feature they provide is the ability to start up several machines at the same time capable of running the project, each with custom performance capabilities. The servers used were equipped with 4 CPUs Intel(R) Xeon(R) CPUs and 8GB of RAM. Using virtual machines was an ideal setup for benchmarking because even though we used several different instances we were able to use the same snapshot across all machines thus ensuring a uniform testing environment. Once a container is started it will automatically begin fetching new data from Twitter and after an initial waiting period (in which the queue fills up with messages) the processing pipeline starts as well.
 \newline
 
@@ -282,3 +290,6 @@ Types in Scala are another optimization that yielded improved performance. Paral
 }
 
 From the chart above we can notice a 3x speed improvement when choosing the appropriate data structures.
+\newline
+\newline
+The benchmarking and results we achieved yielded positive results. The optimization step further improved the running time of the application. We can see a clear trade-off between speed and precision, having multiple seeds for the K-Means algorithm for a better clustering versus having the results faster. [XXX add reference here] further improvements can be made to the precision of the topics by reducing semantic ambiguity by introducing ngrams but these will also further increase the running time of the application.

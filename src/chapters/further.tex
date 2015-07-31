@@ -1,8 +1,7 @@
 \chapter{Further work}
 \label{sec:furtherwork}
 
-We have presented ... 
-The project lays the foundation for several lines of work to improve overall speed and precision...
+We have presented a solution for clustering Twitter message streams that is able to process and scale for the large amount of data delivered by its API. The project lays the foundation for several lines of work to improve overall speed and precision. 
 The system is perfectly usable and but requires that each user deploys its own version of {\project}. Although the use of containers for automatic deployment via Docker reduces this task to running a script, the overhead involved with managing your own machine or environment where this can be done is a drawback. Wanting to improve on this issue but also increase the overall performance of the project, we have identified some areas where it can be improved:
 \begin{itemize}
 	\item As \footnote{A survey of text clustering algorithms} suggests the clustering can be further improved by using n grams instead of matching documents just by using single terms. Single terms might skew results due to semantic ambiguity while having two or more reduces the probability of different semantical meanings. Using the StanfordNLP library which we already use in the project we are able to detect not only the part of speech corresponding to each term but also which term determines others. This information can be leveraged into producing more useful ngrams in the processing step. The new vectors associated with each document would still use term frequency to weigh the importance of the ngrams but reducing some of the semantic ambiguity should yield better results. This would also help cluster shorter phrases and messages since not all tweets use up the maximum amount of characters at their disposal and usually end up oddly clustered.
@@ -13,3 +12,4 @@ The system is perfectly usable and but requires that each user deploys its own v
 	\item Use websockets to notify {\frontend}  of new data that has been clustered. It would improve the user experience: right now when the API has new data the whole interface is redrawn including the clusters meaning that clusters may change position on the page making it harder to identify them. With a websocket implementation {\frontend}  can use event listeners and simply append new information to the page.
 	\item Adding a storage layer or a caching layer in order to speed up the results. The storage could be shared between all running instances of {\project}  and provided that the same query is used clustered results could be returned instantly. The storage layer could also hold raw or parsed tweets but basic check to ensure that the data is relatively new are required. Caching would make more sense due to the fact that real time messages are expected.
 \end{itemize}
+We hope to explore some of these improvements ideas in the future.
