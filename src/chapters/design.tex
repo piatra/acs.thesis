@@ -63,7 +63,17 @@ These parsed messages are pushed to a new queue. The reason for this is to compl
 \end{enumerate}
 
 
-The final stage of the pipeline takes all the parsed messages from the queue and applies the clustering algorithm. The algorithm used for this step is K-Means clustering and the distance function is the cosine similarity. Because the design of the K-Means clustering algorithm is to start the iterations with a random seed consisting of randomly selected points (in our case messages), we run the clustering using different starting seeds and choose the highest value out of all the runs as our best clustering option. This in turn will affect the overall running time of the application as we will see. Depending on our goals either speed or precision we can choose to just rely on the first random seed provided.
+The final stage of the pipeline takes all the parsed messages from the queue and applies the clustering algorithm.
+\newline
+A clustering algorithm will group or set of documents (tweets) into subsets. These subsets are called clusters. The goal of the algorithm is to generate clusters that have sufficiently similar documents in one place, being internally coherent, while at the same time given any two clusters they should be different enough from each other.
+\newline
+Clustering falls in the category of unsupervised learning, meaning that there is no human involvement in classifying any documents beforehand and everything is decided depending on your document set. Usually in clustering algorithm the key metric is distance, having to cluster points in a two dimensional space and therefor the Euclidian distance is used. For document similarity we will employ a different function, the cosine similarity, the following paragraphs will provide more details.
+\newline
+The clusters generated have no relationship between them, this is called \textit{flat clustering} and we suggest this by having the clusters at equal distance from each other. It is also a \textit{hard clustering} assignment meaning that any one message will belong to just one cluster, the opposite being soft clustering where each message belongs to a cluster with a certain degree of certainty similar to fuzzy logic.
+\newline
+To measure the quality of our clustering algorithm we used an evaluation method called \textit{purity} further described in the Testing and Evaluation section.
+\newline
+The algorithm used for this step is K-Means clustering and the distance function is the cosine similarity. We chose K-Means because of its simplicity and efficiency. The K-Means clustering algorithm works by starting the iterations with a random seed consisting of randomly selected points (in our case messages), we run the clustering using different starting seeds and choose the highest value out of all the runs as our best clustering option. This in turn will affect the overall running time of the application as we will see. Depending on our goals either speed or precision we can choose to just rely on the first random seed provided.
 The name K-Means, first introduced in \textbf{Some methods for classification and analysis of multivariate observations} by J. MacQueen. K-Means is an important clustering algorithm; its objective is to minimize the average distance between a point and its cluster center where a cluster center is the mean of all points in that cluster.
 
 \subsection{Clustering Algorithm}
@@ -134,6 +144,16 @@ Different assignments yield different clusters which in turn have different weig
 \newline
 Another problem when using K-Means is choosing the correct \textit{K} value, number of clusters. Most papers suggest having domain knowledge over the data that is being clustered but in our case it is not entirely possible due to the fact that data is coming in real time. Using RSS function and attempting to select a \textit{K} value that minimizes it is an naive approach because RSS will reach its minimum for K = N meaning one cluster for every tweet in the dataset.
 \newline
+A different approach\footnote{http://nlp.stanford.edu/IR-book/html/htmledition/cluster-cardinality-in-k-means-1.html} for choosing \textit{K} is to initially start with \textit{K = 1} and then increment that at each step until the optimum \textit{K} is found.
+
+\begin{equation}
+\text{ K } = {{ \textrm{min[ ${RSS_\textrm{min}}$(K) + $\lambda$K ]} }}
+\end{equation}
+
+The first input of the equation measures \textit{distortion} or in other words how much the documents in the current clusters have deviated from the centroid they are associated with. This gives a quantifiable measure on the quality of the clusters. The second term is set to monitor introduction of new clusters into the system, the $\lambda$ term is a weight factor and it introduces a penalty for the solution when new clusters are added. This is a generalized approach to the previous solution, as we can see that setting $\lambda$ to equal 0 will yield the best solution for \textit{K = N}. The article suggests applying a $\lambda$ that yielded good results for similar data types in the past and adjusting that based on the results. They also go into further details on how to compute the optimum value for $\lambda$.
+\newline
+While this method does improve results, it removes all cluster outliers the ones having zero, one or a few tweets associated with them, the computational cost is increased. The performance hit is not worth the benefits and just by using the frontend application it is easy to identify and disregard such clusters.
+\newline
 The result of the clustering algorithm as well as the tweet message and tweet author are combined and converted to a JSON data structure. This is in turn written to disk to be consumed by the endpoint accessing the server.. Using \textit{Finagle}\footnote{https://twitter.github.io/finagle/} an open source library from Twitter that provides an HTTP server implementation we can create the API endpoint.
 \newline
 Having the data accessible via HTTP it can easily be consumed by any application regardless of the programming language used, also the reason we have chosen JSON as a format is because it is lightweight and most languages have an implementation of a JSON parser. The connection the the API endpoint is not kept alive, all clients are expected to poll the endpoint and react to changes. As an optimization the server could reply with status code 304 Not Modified \footnote{http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html} this would not include a message body and would let the client know that no new data is currently available. This would reduce the payload that has to be transmitted. On the client side this can be improved by using an exponential backoff approach for long polling. The polling period would always double when a 304 status code is presented and it would reset to a lower default value when the endpoint has new data available.
@@ -189,6 +209,8 @@ This is an example of starting a Docker container. We specify a hash which point
 Using this setup benchmarking was greatly simplified and we were able to try out different parameters for the clustering algorithm at the same time and observe how that affected the clustering performance and quality.
 Much of the testing involved in the development of the application was done on DigitalOcean. They are a PaaS\footnote{Platform as a Service} that offer virtual private servers, and one of the most useful feature they provide is the ability to start up several machines at the same time capable of running the project, each with custom performance capabilities. The servers used were equipped with 4 CPUs Intel(R) Xeon(R) CPUs and 8GB of RAM. Using virtual machines was an ideal setup for benchmarking because even though we used several different instances we were able to use the same snapshot across all machines thus ensuring a uniform testing environment. Once a container is started it will automatically begin fetching new data from Twitter and after an initial waiting period (in which the queue fills up with messages) the processing pipeline starts as well.
 \newline
+\newline
+The versioning software used was Git\footnote{https://git-scm.com}. Git is a distributed revision control system and one of the most popular and widely adopted in the industry. We chose to use it because we were most familiar with it and due to its popularity it is easy to get support. It is also the preferred way of delivering software updates to the containers. The images we have built contain an outdated version of the project (the most recent one at time of creation), but through the initialization script any container performs a \textit{git pull}\footnote{This command incorporates the latest changes from a remote repository into the current working branch.} before starting {\project}  to ensure latest version is running. It was also ideal during development for refactoring and introducing new features.
 
 \section{Testing and Evaluation}
 \label{sec:testing}
@@ -292,4 +314,10 @@ Types in Scala are another optimization that yielded improved performance. Paral
 From the chart above we can notice a 3x speed improvement when choosing the appropriate data structures.
 \newline
 \newline
+In order to measure the quality of our clustering we used an evaluation method called \textit{purity}. To compute \textit{purity} we first compute the valid messages in each cluster. This value if divided by the total number of tweets in all clusters and summed. The output of this computation is the \textit{purity}.
+
+\begin{equation}
+	\text{purity(C)} = {{1 \over N}  \sum_k \textrm{$max_i$ ($w_k$ $\cap$ $c_i$)}}
+\end{equation}
+
 The benchmarking and results we achieved yielded positive results. The optimization step further improved the running time of the application. We can see a clear trade-off between speed and precision, having multiple seeds for the K-Means algorithm for a better clustering versus having the results faster. [XXX add reference here] further improvements can be made to the precision of the topics by reducing semantic ambiguity by introducing ngrams but these will also further increase the running time of the application.

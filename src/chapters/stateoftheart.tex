@@ -1,10 +1,12 @@
 \chapter{State of the Art}
 \label{chapter:stateoftheart}
 
+This chapter will focus on providing insight in the current state of both existing client applications and academic papers regarding the subject of Twitter conversations. Due to the popularity of the platform applications come in a wide variety ranging from simple proof of concept/demo applications to businesses.
+
 \section{Background}
 \label{sec:background}
 
-The internet is offering a voice to millions of people that have access to it.
+The Internet has become an immense platform of communication and information with an estimate of 3 billion people online\footnote{http://www.internetlivestats.com/internet-users/} and an exponential growth, it is offering a voice to millions of people that have access to it.
 Creating content which is accessible by everyone in the network is possible with little or no barriers. Anyone can report on events, share their thoughts and ideas and because there are no limits to this process the results are massive amounts of information.
 \newline
 Facebook\footnote{www.facebook.com} and Twitter\footnote{www.twitter.com} are two examples of Internet platforms that have made it increasingly easier for people to generate content in a multitude of different formats: from text and pictures to rich media such as audio and video.
@@ -27,9 +29,7 @@ There are a number of services that use Twitter data and attempt to solve some o
 \subsection{Analytics}
 \label{sub-sec:analytics}
 
-There are a number of analytics services that provide information regarding Twitter data. Most of them are businesses which offer information about the engagement of followers with the content created. Their goal is to help increase the visibility of tweets for businesses and therefor the metrics are related to the followers and focus less on exploring content. 
-
-
+There are a number of analytics services that provide information regarding Twitter data. Most of them are businesses which offer information about the engagement of followers with the content created. Their goal is to help increase the visibility of tweets for businesses and therefor the metrics are related to the followers and focus less on exploring content.
 
 This is also the solution offered by the Twitter analytics \todo{add link} some of the information it provides is the number of user that views your messages, how many new users are now following your account.
 \newline
@@ -52,6 +52,9 @@ Twitter website offers access to world-wide trends and also custom trends. First
 \section{Related Work}
 \label{sub-sec:rel-work}
 
+This section is concerned with similar work in the field of data mining and all related to Twitter conversations and topic trends. They are pushing the limits for the information and insights we can gather from analyzing online conversation and how to achieve this most efficiently.
+\newline
+\newline
 \textit{Politics, Twitter, and information discovery} by \textbf{Moritz Sudhof}. \footnote{http://web.stanford.edu/group/journal/cgi-bin/wordpress/wp-content/uploads/2012/09/Sudhof_Eng_2012.pdf}.
 \newline
 The aim of the paper is to cluster Twitter users into groups based on the opinions they expressed regarding a political controversy. The corpus is fixed and contains tweets from the time the events occurred, they have been selected due to using the same hashtag specific to the event.
@@ -88,3 +91,14 @@ In order to optimize and improve the quality of the clustering the paper introdu
 The paper handles the issue of measuring similarity for really short sentences such as search queries which might not have any terms in common so techniques such as cosine similarity do nothing to help. The proposed solution in the paper is to use each term in the queries we are trying to match up as web search terms. Each term is used to query the web for documents and therefor provide context on it, these are called \textit{context vectors}. Therefor even though the terms \textit{AI} and \textit{Artificial Intelligence} would yield a cosine of 0, and therefor no similarity gathering a number of documents on the terms would help improve the context and compute a much better similarity for the two.
 \newline
 The main objective of the technique and the objective of the paper is finding ways to improve search suggestions to Google users.
+
+\textit{A Latent Source Model for Nonparametric Time Series Classification}\footnote{https://cdn2.hubspot.net/hubfs/489432/docs/A_Latent_Source_Model_for_Nonparametric_Time_Series_Classification.pdf} by \textbf{George H. Chen}, \textbf{Stanislav Nikolov} and {Devavrat Shah}
+\newline
+\newline
+The aim of the paper is to provide an accurate estimation of topics that will become trending on the Twitter social platform, before they are declared trending by the website itself. This allows to turn data mining on Twitter messages into valuable insight into different social phenomenons.
+\newline
+The method proposed classifies topics into trending or not trending and does this by using a nearest neighbor classifier. They employ the classifier over time series weighted using weight majority voting.
+\newline
+The paper also provides theoretical justification of the efficiency of the chosen nearest neighbor classification for time series.
+\newline
+The results of their experiments yielded a 79\% success rate in detecting trends faster than Twitter and with a true positive rate of 95\% and a false positive rate of 4\%.
