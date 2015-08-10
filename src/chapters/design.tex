@@ -158,6 +158,14 @@ While this method does improve results, it removes all cluster outliers the ones
 \newline
 The result of the clustering algorithm as well as the tweet message and tweet author are combined and converted to a JSON data structure. This is in turn written to disk to be consumed by the endpoint accessing the server.. Using \textit{Finagle}\footnote{https://twitter.github.io/finagle/} an open source library from Twitter that provides an HTTP server implementation we can create the API endpoint.
 \newline
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{src/img/jsonoutput.png}
+\caption{Example of JSON output, cluster id, user name and tweet content\label{overflow}}
+\end{figure}
+\newline
+In this example output we can see how the JSON response looks like. An array of tuples consisting of the cluster id in the first position and the tweet on the second position. We can just as easily append additional information to the output such as tweet statistics: number of retweets, number of favorites and so on.
+\newline
 Having the data accessible via HTTP it can easily be consumed by any application regardless of the programming language used, also the reason we have chosen JSON as a format is because it is lightweight and most languages have an implementation of a JSON parser. The connection the the API endpoint is not kept alive, all clients are expected to poll the endpoint and react to changes. As an optimization the server could reply with status code 304 Not Modified \footnote{http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html} this would not include a message body and would let the client know that no new data is currently available. This would reduce the payload that has to be transmitted. On the client side this can be improved by using an exponential backoff approach for long polling. The polling period would always double when a 304 status code is presented and it would reset to a lower default value when the endpoint has new data available.
 
 \subsection{Data Visualization}
@@ -184,13 +192,15 @@ React allows you to break down your interface into smaller unit components. The 
 \caption{Example of cluster rendering\label{overflow}}
 \end{figure}
 
-{\frontend}  polls the server API at a fixed time intervals and gets the latest version of the tweets as well as their respective cluster. Using an appropriate data structure we group the tweets together based on cluster id and draw the clusters to the webpage. Drawing is done using an SVG\abbrev{SVG}{Scalable Vector Graphics} element with the help of the D3 library.
+{\frontend}  polls the server API at a fixed time intervals and gets the latest version of the tweets as well as their respective cluster. Using an appropriate data structure we group the tweets together based on cluster id and draw the clusters to the webpage. Drawing is done using an SVG\abbrev{SVG}{Scalable Vector Graphics} element with the help of the D3 library. The library provides an easy to use API to draw graphics and also provides methods for event listening. We attach events for click, hover and so on, allowing us to provide extended interaction with content. We can therefor provide the tweet message when a tweet point is being hovered on, or expand the cluster when clicking the centroid and providing a full list of tweets.
+\newline
+Because the frontend application continuously polls the backend to fetch the latest version of the data, we would get an unpleasant refresh effect of the page as the clusters are redrawn every time, even when the data has not changed (in the case when two consecutive polls return the same information). To prevent this from happening we first check to see if the new data available has a different length from the previous payload. We expect to always get more tweets to cluster in step \textit{n} than we previously had in step \textit{n - 1}. If that condition is not true than either the request returned the same payload or there are no new tweets to cluster, in both cases we do not redraw the canvas.
 \newline
 The interface presents the user a more meaningful representation of the data: tweets that belong to the same cluster are shown drawn together, also it is possible to explore the cluster and see all the messages that compose it.
 \newline
 The clusters will automatically update when new data comes in without the need to refresh the webpage. The application polls the API and when new messages become available it will redraw the clusters. A small optimization to the polling requests has been added: the polling interval doubles every time the request does not return with new data. This prevents the server from receiving too many requests if multiple {\frontend}  clients are running and also works similarly to the data processing step which will always take longer as more tweets are fed into the pipeline.
 \newline
-An explanation of Figure 3.3: We have tweets (blue dots) and centroids (the red dots). The centroid is only used as a visual cue, making it obvious which tweets belong together. Hovering over any of the blue dots to view the content of the tweet in an overlay that will appear or clicking on the red dot reveals a side menu on the right side with all the tweets that make up the cluster as well as a total.
+An explanation of Figure 3.3: We have tweets (blue dots) and centroids (the red dots). The centroid is only used as a visual cue, making it obvious which tweets belong together. Hovering over any of the blue dots to view the content of the tweet in an overlay that will appear or clicking on the red dot reveals a side menu on the right side with all the tweets that make up the cluster as well as a total. There is no relationship or hierarchy between neighboring clusters just between a centroid and the tweets associated with it. We tried to emphasis this by drawing lines between the tweet and its centroid and by placing centroids equally distanced from each other.
 \subsection{Deployment}
 \label{deployment}
 For automated deployment of the project I used Docker\footnote{https://www.docker.com}, it is an Open Source project that runs processes inside of isolated software containers. A container is similar to a virtual machine but avoids the overhead of it by sharing the same kernel as the host. Dockerfiles are configuration files for Docker images, they are scripts that describe the steps necessary to create the environment for the application. Docker allows to generated any number of such images on the host machine with different configurations and requirements, each one created receives a unique hash used for identification when it is required to run it. A Dockerfile for \project  is also available as a gist\footnote{https://gist.github.com/piatra/53c0b6d185d10eeeaf8b}. Some of the requirements of the project that the image contains and will automatically generate a container with:
@@ -202,7 +212,7 @@ For automated deployment of the project I used Docker\footnote{https://www.docke
 	\item These are are all running on a machine with Ubuntu 12.04
 \end{enumerate}
 The script installs the required software with appropriate versions, updates all packages and it also created all the necessary configurations.
-An image created using the Docker syntax generates a read only template, from which you create the Docker containers.
+An image created using the Docker syntax generates a read only template, from which you start the Docker containers. The main advantage of a docker container is that once configured and fully functioning it is a completely reproducible environment on any machine and no further adjustments are needed. An advantage over virtual machines which in turn have the same benefit of reproducibility is the file size, a VM can easily exceed 1GB in size because it contains the whole environment, OS and other pieces of software while a Dockerfile is just a file. When building the Docker image it is then the software that pulls in all the dependencies in the order specified in the file. This allows us to easily share the environment and deploy it with little requirements for the host machine (just a Docker installation).
 \begin{lstlisting}[caption=Starting a Docker container, label=run_docker_container]
 docker run -itp 8001:8080 ee7c18b2a566 /bin/bash
 \end{lstlisting}
